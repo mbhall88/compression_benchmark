@@ -1,0 +1,5 @@
+name: xz
+channels:
+  - conda-forge
+dependencies:
+  - xz =5.2.9

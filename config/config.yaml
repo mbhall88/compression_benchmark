@@ -1,0 +1,21 @@
+containers:
+  fastq_dl: "docker://quay.io/biocontainers/fastq-dl:2.0.1--pyhdfd78af_0"
+
+# these are from PRJEB29504 https://doi.org/10.1093/gigascience/giz043
+accessions:
+  nanopore: "ERR3152364"
+  illumina: "ERR2935805"
+
+compression_level_ranges:
+  gzip:
+    - 1
+    - 9
+  bzip2:
+    - 1
+    - 9
+  xz:
+    - 1
+    - 9
+  zstd:
+    - 1
+    - 19

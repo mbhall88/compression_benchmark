@@ -1,0 +1,5 @@
+name: gzip
+channels:
+  - conda-forge
+dependencies:
+  - gzip =1.12

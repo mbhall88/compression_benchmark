@@ -1,0 +1,5 @@
+name: zstd
+channels:
+  - conda-forge
+dependencies:
+  - zstd =1.5.2

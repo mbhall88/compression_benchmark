@@ -1,0 +1,5 @@
+name: bzip2
+channels:
+  - conda-forge
+dependencies:
+  - bzip2 =1.0.8
