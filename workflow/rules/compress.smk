@@ -9,7 +9,7 @@ rule compress_gzip:
     benchmark:
         BENCH / "compress/gzip/{lvl}/{tech}/{acc}.tsv"
     resources:
-        runtime="12h",
+        runtime=lambda wildcards, attempt: f"{12 * attempt}h",
         mem_mb=lambda wildcards, attempt: attempt * int(4 * GB),
     params:
         opts="-c -{lvl}"
@@ -32,7 +32,7 @@ rule compress_bzip2:
     benchmark:
         BENCH / "compress/bzip2/{lvl}/{tech}/{acc}.tsv"
     resources:
-        runtime="12h",
+        runtime=lambda wildcards, attempt: f"{12 * attempt}h",
         mem_mb=lambda wildcards, attempt: attempt * int(4 * GB),
     params:
         opts="-z -c -{lvl}"
@@ -55,7 +55,7 @@ rule compress_xz:
     benchmark:
         BENCH / "compress/xz/{lvl}/{tech}/{acc}.tsv"
     resources:
-        runtime="12h",
+        runtime=lambda wildcards, attempt: f"{12 * attempt}h",
         mem_mb=lambda wildcards, attempt: attempt * int(4 * GB),
     params:
         opts="-z -c -{lvl}"
@@ -78,7 +78,7 @@ rule compress_zstd:
     benchmark:
         BENCH / "compress/zstd/{lvl}/{tech}/{acc}.tsv"
     resources:
-        runtime="12h",
+        runtime=lambda wildcards, attempt: f"{12 * attempt}h",
         mem_mb=lambda wildcards, attempt: attempt * int(4 * GB),
     params:
         opts="-c -{lvl}"
