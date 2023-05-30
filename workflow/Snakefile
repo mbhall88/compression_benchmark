@@ -18,21 +18,23 @@ EXTENSIONS = {"gzip": "gz", "bzip2": "bz2", "xz": "xz", "zstd": "zst"}
 combos = []
 target_files = set()
 
-nanopore_accession = config["accessions"]["nanopore"]
-illumina_accession = config["accessions"]["illumina"]
+nanopore_accessions = config["accessions"]["nanopore"]
+illumina_accessions = config["accessions"]["illumina"]
 for tool, rng in config["compression_level_ranges"].items():
     s = rng[0]
     e = rng[-1]
     ext = EXTENSIONS[tool]
     for lvl in range(s, e + 1):
-        target_files.add(
-            BENCH / f"decompress/{tool}/{lvl}/nanopore/{nanopore_accession}.tsv"
-        )
-        combos.append([tool, lvl, "nanopore", nanopore_accession])
-        target_files.add(
-            BENCH / f"decompress/{tool}/{lvl}/illumina/{illumina_accession}.tsv"
-        )
-        combos.append([tool, lvl, "illumina", illumina_accession])
+        for acc in nanopore_accessions:
+            target_files.add(
+                BENCH / f"decompress/{tool}/{lvl}/nanopore/{acc}.tsv"
+            )
+            combos.append([tool, lvl, "nanopore", acc])
+        for acc in illumina_accessions:
+            target_files.add(
+                BENCH / f"decompress/{tool}/{lvl}/illumina/{acc}.tsv"
+            )
+            combos.append([tool, lvl, "illumina", acc])
 
 target_files.add(RESULTS / "compress/sizes.csv")
 
