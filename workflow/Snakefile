@@ -34,7 +34,7 @@ for tool, rng in config["compression_level_ranges"].items():
         )
         combos.append([tool, lvl, "illumina", illumina_accession])
 
-target_files.add(RESULTS / "results/compress/sizes.csv")
+target_files.add(RESULTS / "compress/sizes.csv")
 
 localrules:
     all, aggregate_sizes
