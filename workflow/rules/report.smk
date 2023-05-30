@@ -5,7 +5,7 @@ rule aggregate_sizes:
             for (tool, lvl, tech, acc) in combos
         ],
     output:
-        RESULTS / "results/compress/sizes.csv",
+        RESULTS / "compress/sizes.csv",
     run:
         from pathlib import Path
 

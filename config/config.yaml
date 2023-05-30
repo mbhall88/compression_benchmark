@@ -1,10 +1,29 @@
 containers:
   fastq_dl: "docker://quay.io/biocontainers/fastq-dl:2.0.1--pyhdfd78af_0"
 
-# these are from PRJEB29504 https://doi.org/10.1093/gigascience/giz043
 accessions:
-  nanopore: "ERR3152364"
-  illumina: "ERR2935805"
+  nanopore:
+    - "ERR3152364"  # https://doi.org/10.1093/gigascience/giz043
+    - "ERR9030439"  # https://doi.org/10.1016/S2666-5247(22)00301-9
+    - "SRR11038964" # https://doi.org/10.1016/j.envpol.2020.115081
+    - "SRR12695179" # https://doi.org/10.1128/MRA.01159-20
+    - "SRR24283715"
+    - "ERR10367342" # https://doi.org/10.1099/mgen.0.000132
+    - "SRR24015950"
+    - "SRR15422103"
+    - "SRR13044184"
+    - "SRR22859778"
+  illumina:
+    - "ERR2935805"  # https://doi.org/10.1093/gigascience/giz043
+    - "ERR9030317"  # https://doi.org/10.1016/S2666-5247(22)00301-9
+    - "SRR11038976" # https://doi.org/10.1016/j.envpol.2020.115081
+    - "SRR12695183" # https://doi.org/10.1128/MRA.01159-20
+    - "SRR24283718"
+    - "ERR1023775"  # https://doi.org/10.1099/mgen.0.000132
+    - "SRR24015952"
+    - "SRR22859722"
+    - "SRR098024"
+    - "SRR077288"
 
 compression_level_ranges:
   gzip:
