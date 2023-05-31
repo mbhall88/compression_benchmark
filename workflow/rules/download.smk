@@ -1,6 +1,7 @@
 rule download_data:
     output:
-        fq=RESULTS / "data/{tech}/{acc}.fq"
+        fq=RESULTS / "data/{tech}/{acc}.fq",
+        size=RESULTS / "data/{tech}/{acc}.size"
     log:
         LOGS / "download_data/{tech}/{acc}.log"
     container:
@@ -21,4 +22,5 @@ rule download_data:
             READ2={params.outdir}/{wildcards.acc}_2.fastq.gz
             (paste <(zcat $READ1 | paste - - - - ) <(zcat $READ2 | paste - - - - ) | tr '\t' '\n') > {output.fq} 2>> {log}
         fi
+        (wc -c {output.fq} | awk '{{print $1}}') > {output.size} 2>> {log}
         """
