@@ -15,7 +15,7 @@ rule download_data:
         """
         fastq-dl {params.opts} -a {wildcards.acc} -o {params.outdir} 2> {log}
         if [ {wildcards.tech} = "nanopore" ]; then 
-            gzip -dc {params.outdir}/{wildcards.acc}.fastq.gz > {output.fq} 2>> {log}
+            gzip -dc {params.outdir}/{wildcards.acc}*.fastq.gz > {output.fq} 2>> {log}
         else
             READ1={params.outdir}/{wildcards.acc}_1.fastq.gz
             READ2={params.outdir}/{wildcards.acc}_2.fastq.gz
