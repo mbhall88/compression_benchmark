@@ -185,7 +185,7 @@ def main():
 
     mode = "decompress"
     frames = []
-    for p in Path(f"../../results/benchmark/{mode}").rglob("*.tsv"):
+    for p in map(Path, snakemake.input.decompress_benchmarks):
         acc = p.name.split(".")[0]
         lvl = int(p.parts[-3])
         tech = p.parts[-2]
