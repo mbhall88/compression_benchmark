@@ -26,20 +26,19 @@ for tool, rng in config["compression_level_ranges"].items():
     ext = EXTENSIONS[tool]
     for lvl in range(s, e + 1):
         for acc in nanopore_accessions:
-            target_files.add(
-                BENCH / f"decompress/{tool}/{lvl}/nanopore/{acc}.tsv"
-            )
+            target_files.add(BENCH / f"decompress/{tool}/{lvl}/nanopore/{acc}.tsv")
             combos.append([tool, lvl, "nanopore", acc])
         for acc in illumina_accessions:
-            target_files.add(
-                BENCH / f"decompress/{tool}/{lvl}/illumina/{acc}.tsv"
-            )
+            target_files.add(BENCH / f"decompress/{tool}/{lvl}/illumina/{acc}.tsv")
             combos.append([tool, lvl, "illumina", acc])
 
-target_files.add(RESULTS / "compress/sizes.csv")
+target_files.add(RESULTS / "figures/compression_ratio.png")
+target_files.add(RESULTS / "figures/rate_and_memory.png")
+
 
 localrules:
-    all, aggregate_sizes
+    all,
+    aggregate_sizes,
 
 
 rule all:

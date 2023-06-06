@@ -38,3 +38,9 @@ compression_level_ranges:
   zstd:
     - 1
     - 19
+
+default_compressions_levels:
+  gzip: 6
+  zstd: 3
+  bzip2: 9
+  xz: 6

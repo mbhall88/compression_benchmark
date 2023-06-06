@@ -1,0 +1,9 @@
+name: plot_results
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - pandas
+  - matplotlib-base=3.7
+  - seaborn=0.12
+  - humanfriendly=10.0
