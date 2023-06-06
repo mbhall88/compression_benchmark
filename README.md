@@ -35,10 +35,12 @@ The tools tested in this benchmark are:
 * [`bzip2`][bzip2]
 * [`zstd`][zstd]
 
-These tools were used as they were the main ones that popped up in our discussion. Feel free to
+These tools were used as they were the main ones that popped up in our discussion. Feel
+free to
 raise an issue on this repository if you would like to see another tool included.
 
-All compression level settings were tested for each tool and default settings were used for all other options.
+All compression level settings were tested for each tool and default settings were used
+for all other options.
 
 ### Data
 
@@ -88,7 +90,39 @@ The data used to test each tool are fastqs:
 Note: I couldn't find sources for all of these samples. If you can fill in some of the
 gaps, please raise an issue and I will gladly update the sources.
 
-All data were downloaded with [`fastq-dl][fastq_dl] (v2.0.1). Paired Illumina data were combined into a single fastq file.
+All data were downloaded with [`fastq-dl`][fastq_dl] (v2.0.1). Paired Illumina data were
+combined into a single fastq file.
+
+## Results
+
+### Compression ratio
+
+The first question is how much smaller does each compression tool make a fastq file. As
+this also depends on the compression level selected, all possible levels were tested for
+each tool (the default being indicated with a red circle).
+
+The compression ratio is a percentage of the original file size - i.e.,
+$\frac{compressed size}{uncompressed size}$.
+
+![Compression ratio figure](./results/figures/compression_ratio.png)
+
+<span class="caption">Compression ratio (y-axis) for different compression tools and
+levels. Compression ratio is a percentage of the original file size. The red circles
+indicate the default compression level for each tool. Illumina data is represented with
+a solid line and circular points, whereas Nanopore data is a dashed line with cross
+points.</span>
+
+The most striking result here is the noticeable different in compression ratio between
+Illumina and Nanopore data - regardless of the compression tool used. (If anyone can
+suggest a reason for this, please raise an issue.)
+
+Using default settings, `zstd` and `gzip` provide similar ratios, as do `xz`
+and `bzip2` (however, compression level doesn't seem to actually change the ratio
+for `bzip2`). When using the highest compression level `xz` provides the best compression (however, this comes at a cost to runtime as we'll see below).
+
+### (De)compression rate and memory usage
+
+
 
 [gzip]: http://www.gzip.org/
 
