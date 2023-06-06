@@ -1,5 +1,7 @@
 # Compression benchmark
 
+[![DOI](https://zenodo.org/badge/645588875.svg)](https://zenodo.org/badge/latestdoi/645588875)
+
 Benchmarking fastq compression with generic (mature) compression algorithms
 
 -   [Motivation](#motivation)

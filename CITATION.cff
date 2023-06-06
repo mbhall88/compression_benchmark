@@ -1,0 +1,35 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: >-
+  Benchmarking fastq compression with generic (mature)
+  compression algorithms
+message: >-
+  If you use this dataset, please cite it using the metadata
+  from this file.
+type: dataset
+authors:
+  - given-names: Michael
+    name-particle: B
+    family-names: Hall
+    email: michael.hall2@unimelb.edu.au
+    affiliation: >-
+      Department of Microbiology and Immunology, The Peter
+      Doherty Institute for Infection and Immunity, The
+      University of Melbourne
+    orcid: 'https://orcid.org/0000-0003-3683-6208'
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.8008877
+    description: Zenodo archive DOI
+repository-code: 'https://github.com/mbhall88/compression_benchmark'
+url: 'https://github.com/mbhall88/compression_benchmark'
+keywords:
+  - compression
+  - benchmark
+  - bioinformatics
+  - fastq
+license: MIT
+commit: b2fe03049769ed7f799c94af6f86b4d30e965ebb
+date-released: '2020-06-06'
