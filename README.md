@@ -2,6 +2,18 @@
 
 Benchmarking fastq compression with generic (mature) compression algorithms
 
+-   [Motivation](#motivation){#toc-motivation}
+-   [Methods](#methods){#toc-methods}
+    -   [Tools](#tools){#toc-tools}
+    -   [Data](#data){#toc-data}
+-   [Results](#results){#toc-results}
+    -   [Compression
+      ratio](#compression-ratio){#toc-compression-ratio}
+    -   [(De)compression rate and memory
+      usage](#decompression-rate-and-memory-usage){#toc-decompression-rate-and-memory-usage}
+-   [Conclusion](#conclusion){#toc-conclusion}
+
+
 ## Motivation
 
 This behcmark is motivated by a recent question from Ryan Connor on the µbioinfo Slack
