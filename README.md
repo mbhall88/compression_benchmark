@@ -194,14 +194,14 @@ compression tools in a selection of programming languages with an arbitrary grad
 system for how "stable" I think they are (feel free to put in a pull request if you want
 to contribute other languages).
 
-|        | gzip          | bzip2       | xz         | zstd         |
-|--------|---------------|-------------|------------|--------------|
-| Python | [A][pygzip]   | [A][pybz2]  | [A][pyxz]  | [B+][pyzstd] |
-| Rust   | [B++][gziprs] | [B+][bz2rs] | [B+][xzrs] | [B][zstdrs]  |
-| C/C++  | [A][zlib]     | [A][bzip2]  | [A][xz]    | [B++][zstd]  |
+|        | gzip        | bzip2       | xz         | zstd         |
+|--------|-------------|-------------|------------|--------------|
+| Python | [A][pygzip] | [A][pybz2]  | [A][pyxz]  | [B+][pyzstd] |
+| Rust   | [A][gziprs] | [B+][bz2rs] | [B+][xzrs] | [B][zstdrs]  |
+| C/C++  | [A][zlib]   | [A][bzip2]  | [A][xz]    | [A][zstd]    |
 
-- A: standard library (i.e. builtin)
-- B: external library that is actively maintained, well-documented, and quick response
+- A: standard library (i.e. builtin) or library is maintained by the original developer (note: Rust's `gzip` library is maintained by rust-lang itself)
+- B: external library that is actively maintained, well-documented, and has quick response
   times
 
 [gzip]: http://www.gzip.org/
