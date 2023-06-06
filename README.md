@@ -4,15 +4,14 @@
 
 Benchmarking fastq compression with generic (mature) compression algorithms
 
--   [Motivation](#motivation)
--   [Methods](#methods)
-    -   [Tools](#tools)
-    -   [Data](#data)
--   [Results](#results)
-    -   [Compression ratio](#compression-ratio)
-    -   [(De)compression rate and memory usage](#decompression-rate-and-memory-usage)
--   [Conclusion](#conclusion)
-
+- [Motivation](#motivation)
+- [Methods](#methods)
+    - [Tools](#tools)
+    - [Data](#data)
+- [Results](#results)
+    - [Compression ratio](#compression-ratio)
+    - [(De)compression rate and memory usage](#decompression-rate-and-memory-usage)
+- [Conclusion](#conclusion)
 
 ## Motivation
 
@@ -132,6 +131,10 @@ The most striking result here is the noticeable different in compression ratio b
 Illumina and Nanopore data - regardless of the compression tool used. (If anyone can
 suggest a reason for this, please raise an issue.)
 
+> _**Update 07/06/2023**: [Peter Menzel](https://github.com/pmenzel) mentioned this is
+likely due to the noisier quality scores in the Nanopore data. Illumina quality scores
+are generally quite homogenous, which increases compressability._
+
 Using default settings, `zstd` and `gzip` provide similar ratios, as do `xz`
 and `bzip2` (however, compression level doesn't seem to actually change the ratio
 for `bzip2`). When using the highest compression level `xz` provides the best
@@ -202,8 +205,10 @@ to contribute other languages).
 | Rust   | [A][gziprs] | [B+][bz2rs] | [B+][xzrs] | [B][zstdrs]  |
 | C/C++  | [A][zlib]   | [A][bzip2]  | [A][xz]    | [A][zstd]    |
 
-- A: standard library (i.e. builtin) or library is maintained by the original developer (note: Rust's `gzip` library is maintained by rust-lang itself)
-- B: external library that is actively maintained, well-documented, and has quick response
+- A: standard library (i.e. builtin) or library is maintained by the original
+  developer (note: Rust's `gzip` library is maintained by rust-lang itself)
+- B: external library that is actively maintained, well-documented, and has quick
+  response
   times
 
 [gzip]: http://www.gzip.org/
