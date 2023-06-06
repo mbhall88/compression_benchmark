@@ -1,6 +1,6 @@
 # Compression benchmark
 
-Benchmarking fastq compression with standard (mature) compression algorithms
+Benchmarking fastq compression with generic (mature) compression algorithms
 
 ## Motivation
 
@@ -12,7 +12,7 @@ group
 > assuming you agree (if not, why not?), why haven't the others compression types caught
 > on in bioinformatics?
 
-It kicked off a really interesting discussion, which led me to dig into the literature
+It kicked off an interesting discussion, which led me to dig into the literature
 and see what I could find. I'm sure I could search deeper and for longer, but I really
 couldn't find any benchmarks that satisfied me. Don't get me wrong, there are plenty of
 benchmarks, but they're always looking at bioinformatics-specific tools for compressing
@@ -102,7 +102,7 @@ this also depends on the compression level selected, all possible levels were te
 each tool (the default being indicated with a red circle).
 
 The compression ratio is a percentage of the original file size - i.e.,
-$\frac{compressed size}{uncompressed size}$.
+$\frac{\text{compressed size}}{\text{uncompressed size}}$.
 
 ---
 
@@ -112,7 +112,7 @@ $\frac{compressed size}{uncompressed size}$.
 levels. Compression ratio is a percentage of the original file size. The red circles
 indicate the default compression level for each tool. Illumina data is represented with
 a solid line and circular points, whereas Nanopore data is a dashed line with cross
-points.*
+points. Translucent error bands represent the 95% confidence interval.*
 
 ---
 
@@ -122,11 +122,77 @@ suggest a reason for this, please raise an issue.)
 
 Using default settings, `zstd` and `gzip` provide similar ratios, as do `xz`
 and `bzip2` (however, compression level doesn't seem to actually change the ratio
-for `bzip2`). When using the highest compression level `xz` provides the best compression (however, this comes at a cost to runtime as we'll see below).
+for `bzip2`). When using the highest compression level `xz` provides the best
+compression (however, this comes at a cost to runtime as we'll see below).
 
 ### (De)compression rate and memory usage
 
+In many scenarios, the (de)compression rate is just as important as the compression
+ratio. However, if compressing for archival purposes, rate is probably not as important.
 
+The compression rate is $\frac{\text{uncompressed size}}{\text{(de)compression time (
+secs)}}$.
+
+---
+
+![Compression rate figure](./results/figures/rate_and_memory.png)
+
+*Figure 2: Compression (left column) and decompression (right column) rate (top row) and
+peak memory usage (lower row). Note the log scale for rate. The red circles indicate the
+default compression level
+for each tool. Illumina data is represented with a solid line and circular points,
+whereas Nanopore data is a dashed line with cross points. Translucent error bands
+represent the 95% confidence interval.*
+
+---
+
+As alluded to earlier, `xz` pays for its fantastic compression ratios by being
+orders-of-magnitude slower than the other tools. It also uses a lot more memory than the
+other tools when (de)compressing - although in absolute terms, the highest memory usage
+is still well below 1GB.
+
+The main take-away from Figure 2 is that `zstd` (de)compresses **much** faster than the
+other tools (using the default level). Compression level seems to have a big impact in
+compression rate (except for `bzip2`), however, not so much for decompression.
+
+## Conclusion
+
+So what tool to use? As most often with benchmarks: it depends on your situation.
+
+If all you care about is compressing your data as small as it will go ,and you don't
+mind how long it takes, then `xz` - with compression level 9 - is the obvious choice.
+
+If you want fast (de)compression, then `zstd` is the best option - using default
+options.
+
+If, like most people, you're contemplating replacing `gzip` (default options), the
+siutation is a little
+less clear. As a drop-in replacement, `zstd` (default options) will give you about the
+same compression
+ratio with ~10-fold faster compression and ~3-5-fold faster decompression. Another
+option is `bzip2`, which will give you ~1.2-fold better compression ratios than `gzip` (
+and `zstd`) with a comparable compression rate to `gzip`. However, `bzip2`'s
+decompression rate is ~5-fold slower than `gzip`.
+
+One final consideration is APIs for various programming languages. If it is difficult to
+read/write files that are compressed with a given algorithm, then using that compression
+type might cause problems. Most (good) bioinformatics tools support `gzip`-compressed
+input and output. However, support for other compression types shouldn't be too much
+work for most software tool developers provided a well-maintained and documented API is
+available in the relevant programming language. Here is a list of APIs for the tested
+compression tools in a selection of programming languages with an arbitrary grading
+system for how "stable" I think they are (feel free to put in a pull request if you want
+to contribute other languages).
+
+|        | gzip          | bzip2       | xz         | zstd         |
+|--------|---------------|-------------|------------|--------------|
+| Python | [A][pygzip]   | [A][pybz2]  | [A][pyxz]  | [B+][pyzstd] |
+| Rust   | [B++][gziprs] | [B+][bz2rs] | [B+][xzrs] | [B][zstdrs]  |
+| C/C++  | [A][zlib]     | [A][bzip2]  | [A][xz]    | [B++][zstd]  |
+
+- A: standard library (i.e. builtin)
+- B: external library that is actively maintained, well-documented, and quick response
+  times
 
 [gzip]: http://www.gzip.org/
 
@@ -137,3 +203,21 @@ for `bzip2`). When using the highest compression level `xz` provides the best co
 [zstd]: https://github.com/facebook/zstd
 
 [fastq_dl]: https://github.com/rpetit3/fastq-dl
+
+[pygzip]: https://docs.python.org/3/library/gzip.html
+
+[pyxz]: https://docs.python.org/3/library/lzma.html#module-lzma
+
+[pybz2]: https://docs.python.org/3/library/bz2.html#module-bz2
+
+[pyzstd]: https://github.com/indygreg/python-zstandard
+
+[zstdrs]: https://github.com/gyscos/zstd-rs
+
+[xzrs]: https://github.com/alexcrichton/xz2-rs
+
+[bz2rs]: https://github.com/alexcrichton/bzip2-rs
+
+[gziprs]: https://github.com/rust-lang/flate2-rs
+
+[zlib]: https://github.com/madler/zlib
