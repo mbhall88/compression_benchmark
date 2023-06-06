@@ -104,6 +104,8 @@ each tool (the default being indicated with a red circle).
 The compression ratio is a percentage of the original file size - i.e.,
 $\frac{compressed size}{uncompressed size}$.
 
+---
+
 ![Compression ratio figure](./results/figures/compression_ratio.png)
 
 *Figure 1: Compression ratio (y-axis) for different compression tools and
@@ -111,6 +113,8 @@ levels. Compression ratio is a percentage of the original file size. The red cir
 indicate the default compression level for each tool. Illumina data is represented with
 a solid line and circular points, whereas Nanopore data is a dashed line with cross
 points.*
+
+---
 
 The most striking result here is the noticeable different in compression ratio between
 Illumina and Nanopore data - regardless of the compression tool used. (If anyone can
