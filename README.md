@@ -1,4 +1,4 @@
-# Compression benchmark
+# FASTQ compression benchmark
 
 [![DOI](https://zenodo.org/badge/645588875.svg)](https://zenodo.org/badge/latestdoi/645588875)
 
