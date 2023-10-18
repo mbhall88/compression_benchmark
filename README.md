@@ -205,7 +205,7 @@ to contribute other languages).
 | Rust   | [A][gziprs] | [B+][bz2rs]  | [B+][xzrs] | [B][zstdrs]  |
 | C/C++  | [A][zlib]   | [A][bzip2]   | [A][xz]    | [A][zstd]    |
 | Julia  | [A][gzipjl] | [A][bzip2jl] | [A][xzjl]  | [A][zstdjl]  |
-| Go     | [A][gzipgo] | [A][bzip2go] | [B][xzgo]  | [A][zstdgo]  |
+| Go     | [A][gzipgo] | [A][bzip2go] | [B][xzgo]  | [B][zstdgo]  |
 
 - A: standard library (i.e. builtin) or library is maintained by the original
   developer (note: Rust's `gzip` library is maintained by rust-lang itself)
