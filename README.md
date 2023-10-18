@@ -199,11 +199,13 @@ compression tools in a selection of programming languages with an arbitrary grad
 system for how "stable" I think they are (feel free to put in a pull request if you want
 to contribute other languages).
 
-|        | gzip        | bzip2       | xz         | zstd         |
-|--------|-------------|-------------|------------|--------------|
-| Python | [A][pygzip] | [A][pybz2]  | [A][pyxz]  | [B+][pyzstd] |
-| Rust   | [A][gziprs] | [B+][bz2rs] | [B+][xzrs] | [B][zstdrs]  |
-| C/C++  | [A][zlib]   | [A][bzip2]  | [A][xz]    | [A][zstd]    |
+|        | gzip        | bzip2        | xz         | zstd         |
+|--------|-------------|--------------|------------|--------------|
+| Python | [A][pygzip] | [A][pybz2]   | [A][pyxz]  | [B+][pyzstd] |
+| Rust   | [A][gziprs] | [B+][bz2rs]  | [B+][xzrs] | [B][zstdrs]  |
+| C/C++  | [A][zlib]   | [A][bzip2]   | [A][xz]    | [A][zstd]    |
+| Julia  | [A][gzipjl] | [A][bzip2jl] | [A][xzjl]  | [A][zstdjl]  |
+| Go     | [A][gzipgo] | [A][bzip2go] | [B][xzgo]  | [B][zstdgo]  |
 
 - A: standard library (i.e. builtin) or library is maintained by the original
   developer (note: Rust's `gzip` library is maintained by rust-lang itself)
@@ -238,3 +240,19 @@ to contribute other languages).
 [gziprs]: https://github.com/rust-lang/flate2-rs
 
 [zlib]: https://github.com/madler/zlib
+
+[gzipjl]: https://github.com/JuliaIO/GZip.jl
+
+[bzip2jl]: https://github.com/JuliaIO/CodecBzip2.jl
+
+[xzjl]: https://github.com/JuliaIO/CodecXz.jl
+
+[zstdjl]: https://github.com/JuliaIO/CodecZstd.jl
+
+[gzipgo]: https://pkg.go.dev/compress/gzip
+
+[bzip2go]: https://pkg.go.dev/compress/bzip2
+
+[xzgo]: https://github.com/ulikunitz/xz
+
+[zstdgo]: https://pkg.go.dev/github.com/klauspost/compress/zstd
