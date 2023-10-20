@@ -58,6 +58,7 @@ rule plot_results:
     output:
         compression_ratio=RESULTS / "figures/compression_ratio.png",
         rate_and_memory=RESULTS / "figures/rate_and_memory.png",
+        pareto_frontier=RESULTS / "figures/pareto_frontier.png",
     resources:
         runtime="5m",
     log:

@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 set -eu
 
-module load singularity/3.8.5
-
 JOB_NAME="snakemake_master_process."$(date "+%s")
 LOG_DIR="logs"
 

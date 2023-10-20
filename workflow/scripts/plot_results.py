@@ -2,12 +2,13 @@ import sys
 
 sys.stderr = open(snakemake.log[0], "w")
 
-import pandas as pd
 from pathlib import Path
+
 import matplotlib.pyplot as plt
-from matplotlib.ticker import PercentFormatter
-from humanfriendly import format_size
+import pandas as pd
 import seaborn as sns
+from humanfriendly import format_size
+from matplotlib.ticker import PercentFormatter
 
 FIGSIZE = (13, 8)
 DPI = 300
@@ -142,6 +143,58 @@ def plot_rate_and_memory(ys, data, hue, hue_order, style, style_order, output):
     fig.savefig(output)
 
 
+def plot_pareto_frontier(xs, y, data, hue, hue_order, style, style_order, output):
+    fig, axes = plt.subplots(figsize=FIGSIZE, dpi=DPI, nrows=1, ncols=2, sharey=True)
+
+    for i, (x, ax) in enumerate(zip(xs, axes.flatten())):
+        sns.scatterplot(
+            data=data,
+            x=x,
+            y=y,
+            hue=hue,
+            hue_order=hue_order,
+            style=style,
+            style_order=style_order,
+            palette=PALETTE,
+            ax=ax,
+            mec=MEC,
+            err_kws=ERR_KWS,
+        )
+
+        if "rate" in x:
+            ax.set_xlabel("Rate")
+            ax.set_title(x.replace("_rate", "").capitalize())
+            ax.set_xscale("log")
+            KB = 1000
+            MB = 1000 * KB
+            xticks = [MB, 10 * MB, 25 * MB, 50 * MB, 100 * MB, 250 * MB, 500 * MB]
+            ax.set_xticks(xticks)
+            xticklabels = []
+            for rate in xticks:
+                rate, unit = format_size(rate).split()
+                rate = round(float(rate))
+                xticklabels.append(f"{rate} {unit}/s")
+
+            ax.set_xticklabels(xticklabels)
+
+            ax.legend(loc="upper right", framealpha=1, frameon=True)
+
+        if x != "decompress_rate":
+            ax.get_legend().remove()
+
+        for tool, lvl in DEFAULT_LVL.items():
+            for t in set(data["technology"]):
+                xmean = data.query("tool==@tool and level==@lvl and technology==@t")[
+                    x
+                ].mean()
+                ymean = data.query("tool==@tool and level==@lvl and technology==@t")[
+                    y
+                ].mean()
+                ax.scatter(xmean, ymean, s=110, fc="None", ec="red")
+
+    fig.savefig(output)
+
+
 def main():
     plt.style.use("seaborn-v0_8-whitegrid")
 
@@ -236,6 +289,17 @@ def main():
         hue=hue,
         style=style,
         output=snakemake.output.rate_and_memory,
+    )
+
+    plot_pareto_frontier(
+        xs=["compress_rate", "decompress_rate"],
+        y="compress_ratio",
+        data=df,
+        hue_order=hue_order,
+        style_order=style_order,
+        hue=hue,
+        style=style,
+        output=snakemake.output.pareto_frontier,
     )
 
 
