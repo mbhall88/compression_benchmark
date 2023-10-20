@@ -14,7 +14,7 @@ LOGS = Path("logs/rules").resolve()
 CONTAINERS = config["containers"]
 RESOURCES = Path("resources").resolve()
 GB = 1_000
-EXTENSIONS = {"gzip": "gz", "bzip2": "bz2", "xz": "xz", "zstd": "zst"}
+EXTENSIONS = {"gzip": "gz", "bzip2": "bz2", "xz": "xz", "zstd": "zst", "brotli": "br"}
 combos = []
 target_files = set()
 
@@ -34,6 +34,7 @@ for tool, rng in config["compression_level_ranges"].items():
 
 target_files.add(RESULTS / "figures/compression_ratio.png")
 target_files.add(RESULTS / "figures/rate_and_memory.png")
+target_files.add(RESULTS / "figures/pareto_frontier.png")
 
 
 localrules:

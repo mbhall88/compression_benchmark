@@ -89,3 +89,26 @@ rule compress_zstd:
         zstd {params.opts} {input.fq} > {output.fq} 2> {log}
         (wc -c {output.fq} | awk '{{print $1}}') > {output.size} 2>> {log}
         """
+
+rule compress_brotli:
+    input:
+        fq=rules.download_data.output.fq,
+    output:
+        fq=temp(RESULTS / "compress/brotli/{lvl}/{tech}/{acc}.fq.br"),
+        size=RESULTS / "compress/brotli/{lvl}/{tech}/{acc}.size",
+    log:
+        LOGS / "compress_brotli/{lvl}/{tech}/{acc}.log"
+    benchmark:
+        BENCH / "compress/brotli/{lvl}/{tech}/{acc}.tsv"
+    resources:
+        runtime=lambda wildcards, attempt: f"{12 * attempt}h",
+        mem_mb=lambda wildcards, attempt: attempt * int(4 * GB),
+    params:
+        opts="-c -q {lvl}"
+    conda:
+        ENVS / "brotli.yaml"
+    shell:
+        """
+        brotli {params.opts} {input.fq} > {output.fq} 2> {log}
+        (wc -c {output.fq} | awk '{{print $1}}') > {output.size} 2>> {log}
+        """

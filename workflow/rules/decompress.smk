@@ -73,3 +73,22 @@ rule decompress_zstd:
         ENVS / "zstd.yaml"
     shell:
         "zstd {params.opts} {input.fq} > {output.fq} 2> {log}"
+
+rule decompress_brotli:
+    input:
+        fq=rules.compress_brotli.output.fq,
+    output:
+        fq=temp(RESULTS / "decompress/brotli/{lvl}/{tech}/{acc}.fq"),
+    log:
+        LOGS / "decompress_brotli/{lvl}/{tech}/{acc}.log"
+    benchmark:
+        BENCH / "decompress/brotli/{lvl}/{tech}/{acc}.tsv"
+    resources:
+        runtime=lambda wildcards, attempt: f"{12 * attempt}h",
+        mem_mb=lambda wildcards, attempt: attempt * int(4 * GB),
+    params:
+        opts="-c -d"
+    conda:
+        ENVS / "brotli.yaml"
+    shell:
+        "brotli {params.opts} {input.fq} > {output.fq} 2> {log}"
