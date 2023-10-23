@@ -144,7 +144,7 @@ def plot_rate_and_memory(ys, data, hue, hue_order, style, style_order, output):
 
 
 def plot_pareto_frontier(xs, y, data, hue, hue_order, style, style_order, output):
-    fig, axes = plt.subplots(figsize=FIGSIZE, dpi=DPI, nrows=1, ncols=2, sharey=True)
+    fig, axes = plt.subplots(figsize=FIGSIZE, dpi=DPI, nrows=2, ncols=1, sharex=True)
 
     for i, (x, ax) in enumerate(zip(xs, axes.flatten())):
         sns.scatterplot(
@@ -157,9 +157,11 @@ def plot_pareto_frontier(xs, y, data, hue, hue_order, style, style_order, output
             style_order=style_order,
             palette=PALETTE,
             ax=ax,
-            mec=MEC,
-            err_kws=ERR_KWS,
+            linewidth=0,
+            alpha=0.5,
         )
+
+        ax.set_ylabel("Ratio")
 
         if "rate" in x:
             ax.set_xlabel("Rate")
@@ -177,20 +179,10 @@ def plot_pareto_frontier(xs, y, data, hue, hue_order, style, style_order, output
 
             ax.set_xticklabels(xticklabels)
 
-            ax.legend(loc="upper right", framealpha=1, frameon=True)
+            ax.legend(loc="upper left", framealpha=1, frameon=True)
 
         if x != "decompress_rate":
             ax.get_legend().remove()
-
-        for tool, lvl in DEFAULT_LVL.items():
-            for t in set(data["technology"]):
-                xmean = data.query("tool==@tool and level==@lvl and technology==@t")[
-                    x
-                ].mean()
-                ymean = data.query("tool==@tool and level==@lvl and technology==@t")[
-                    y
-                ].mean()
-                ax.scatter(xmean, ymean, s=110, fc="None", ec="red")
 
     fig.savefig(output)
 

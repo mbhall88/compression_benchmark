@@ -2,4 +2,4 @@ name: brotli
 channels:
   - conda-forge
 dependencies:
-  - brotli=1.1
+  - brotli=1.0

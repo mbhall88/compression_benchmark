@@ -8,7 +8,7 @@ rule decompress_gzip:
     benchmark:
         BENCH / "decompress/gzip/{lvl}/{tech}/{acc}.tsv"
     resources:
-        runtime=lambda wildcards, attempt: f"{12 * attempt}h",
+        runtime=lambda wildcards, attempt: f"{1 * attempt}d",
         mem_mb=lambda wildcards, attempt: attempt * int(4 * GB),
     params:
         opts="-c -d"
@@ -27,7 +27,7 @@ rule decompress_bzip2:
     benchmark:
         BENCH / "decompress/bzip2/{lvl}/{tech}/{acc}.tsv"
     resources:
-        runtime=lambda wildcards, attempt: f"{12 * attempt}h",
+        runtime=lambda wildcards, attempt: f"{1 * attempt}d",
         mem_mb=lambda wildcards, attempt: attempt * int(4 * GB),
     params:
         opts="-d -c"
@@ -46,7 +46,7 @@ rule decompress_xz:
     benchmark:
         BENCH / "decompress/xz/{lvl}/{tech}/{acc}.tsv"
     resources:
-        runtime=lambda wildcards, attempt: f"{12 * attempt}h",
+        runtime=lambda wildcards, attempt: f"{1 * attempt}d",
         mem_mb=lambda wildcards, attempt: attempt * int(4 * GB),
     params:
         opts="-d -c"
@@ -65,7 +65,7 @@ rule decompress_zstd:
     benchmark:
         BENCH / "decompress/zstd/{lvl}/{tech}/{acc}.tsv"
     resources:
-        runtime=lambda wildcards, attempt: f"{12 * attempt}h",
+        runtime=lambda wildcards, attempt: f"{1 * attempt}d",
         mem_mb=lambda wildcards, attempt: attempt * int(4 * GB),
     params:
         opts="-c -d"
@@ -84,7 +84,7 @@ rule decompress_brotli:
     benchmark:
         BENCH / "decompress/brotli/{lvl}/{tech}/{acc}.tsv"
     resources:
-        runtime=lambda wildcards, attempt: f"{12 * attempt}h",
+        runtime=lambda wildcards, attempt: f"{1 * attempt}d",
         mem_mb=lambda wildcards, attempt: attempt * int(4 * GB),
     params:
         opts="-c -d"
