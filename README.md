@@ -11,6 +11,7 @@ Benchmarking fastq compression with generic (mature) compression algorithms
 - [Results](#results)
     - [Compression ratio](#compression-ratio)
     - [(De)compression rate and memory usage](#decompression-rate-and-memory-usage)
+    - [Rate vs. Ratio](#rate-vs-ratio)
 - [Conclusion](#conclusion)
 
 ## Motivation
