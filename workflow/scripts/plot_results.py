@@ -161,7 +161,8 @@ def plot_pareto_frontier(xs, y, data, hue, hue_order, style, style_order, output
             alpha=0.5,
         )
 
-        ax.set_ylabel("Ratio")
+        ax.set_ylabel("Compression ratio")
+        ax.yaxis.set_major_formatter(PercentFormatter(1.0, decimals=0))
 
         if "rate" in x:
             ax.set_xlabel("Rate")
