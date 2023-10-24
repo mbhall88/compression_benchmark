@@ -4,15 +4,18 @@
 
 Benchmarking fastq compression with generic (mature) compression algorithms
 
-- [Motivation](#motivation)
-- [Methods](#methods)
+- [FASTQ compression benchmark](#fastq-compression-benchmark)
+  - [Motivation](#motivation)
+  - [Methods](#methods)
     - [Tools](#tools)
     - [Data](#data)
-- [Results](#results)
+      - [Nanopore](#nanopore)
+      - [Illumina](#illumina)
+  - [Results](#results)
     - [Compression ratio](#compression-ratio)
     - [(De)compression rate and memory usage](#decompression-rate-and-memory-usage)
     - [Rate vs. Ratio](#rate-vs-ratio)
-- [Conclusion](#conclusion)
+  - [Conclusion](#conclusion)
 
 ## Motivation
 
@@ -212,7 +215,7 @@ system for how "stable" I think they are (feel free to put in a pull request if 
 to contribute other languages).
 
 |        | gzip        | bzip2        | xz         | zstd         | brotli      |
-|--------|-------------|--------------|------------|--------------|-------------|
+| ------ | ----------- | ------------ | ---------- | ------------ | ----------- |
 | Python | [A][pygzip] | [A][pybz2]   | [A][pyxz]  | [B+][pyzstd] | [A][brotli] |
 | Rust   | [A][gziprs] | [B+][bz2rs]  | [B+][xzrs] | [B][zstdrs]  | [B+][brrs]  |
 | C/C++  | [A][zlib]   | [A][bzip2]   | [A][xz]    | [A][zstd]    | [A][brotli] |
