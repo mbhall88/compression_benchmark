@@ -45,6 +45,7 @@ The tools tested in this benchmark are:
 * [`xz`][xz]
 * [`bzip2`][bzip2]
 * [`zstd`][zstd]
+* [`brotli`][brotli]
 
 These tools were used as they were the main ones that popped up in our discussion. Feel
 free to
@@ -135,10 +136,10 @@ suggest a reason for this, please raise an issue.)
 likely due to the noisier quality scores in the Nanopore data. Illumina quality scores
 are generally quite homogenous, which increases compressability._
 
-Using default settings, `zstd` and `gzip` provide similar ratios, as do `xz`
+Using default settings, `zstd` and `gzip` provide similar ratios, as do `brotli`, `xz`
 and `bzip2` (however, compression level doesn't seem to actually change the ratio
 for `bzip2`). When using the highest compression level `xz` provides the best
-compression (however, this comes at a cost to runtime as we'll see below).
+compression (however, this comes at a cost to runtime as we'll see below) - slightly better than `brotli`, which is a close second.
 
 ### (De)compression rate and memory usage
 
@@ -161,24 +162,34 @@ represent the 95% confidence interval.*
 
 ---
 
-As alluded to earlier, `xz` pays for its fantastic compression ratios by being
-orders-of-magnitude slower than the other tools. It also uses a lot more memory than the
-other tools when (de)compressing - although in absolute terms, the highest memory usage
-is still well below 1GB.
+As alluded to earlier, `xz` and `brotli` pay for their fantastic compression ratios by being
+orders-of-magnitude slower than the other tools at compressing (using the default compression level). `brotli` also uses more memory than the
+other tools when compressing at its default level - although in absolute terms, the highest memory usage
+is still well below 1GB (for `xz` at the highest compression level).
 
 The main take-away from Figure 2 is that `zstd` (de)compresses **much** faster than the
 other tools (using the default level). Compression level seems to have a big impact in
 compression rate (except for `bzip2`), however, not so much for decompression.
+
+### Rate vs. Ratio
+
+[Cornelius Roemer](https://github.com/corneliusroemer) [suggested plotting rate against ratio](https://github.com/mbhall88/compression_benchmark/issues/3) in order to get a [Pareto Frontier](https://en.wikipedia.org/wiki/Pareto_front). These are good plots to get a quick sense of which algorithms are best suited to a specific use case. The lower right corner is the "magic zone" where an algorithm has high rate and ratio. In Figure 3 we see that the compression version of this plot is a little messy as the compression rate it quite variable. However, `gzip` and `zstd` do tend to have more points on the lower-ish right, with a spattering of `brotli` points - though there are also a number of `brotli` points on the left. The decompression plot is a lot clearer and we get nice "fronts". From this it is clear that `zstd` and `brotli` give fast decompression even with good compression ratios.
+
+![Pareto frontier figure](./results/figures/pareto_frontier.png)
+
+*Figure 3: Compression (top row) and decompression (lower row) rate (x-axis) and
+peak memory usage (lower row). Note the log scale for rate. Illumina data is represented with circular points
+and Nanopore data with cross points.*
 
 ## Conclusion
 
 So what tool to use? As most often with benchmarks: it depends on your situation.
 
 If all you care about is compressing your data as small as it will go ,and you don't
-mind how long it takes, then `xz` - with compression level 9 - is the obvious choice.
+mind how long it takes, then `xz` (compression level 9) or `brotli` (level 11 - default) - are the obvious choices. However, if you're planning on a really good one-off compression, but expect decrompressing regularly, `brotli` is probably the better option.
 
 If you want fast (de)compression, then `zstd` is the best option - using default
-options.
+options. Though a special mention should also go to `brotli` for decompression rates.
 
 If, like most people, you're contemplating replacing `gzip` (default options), the
 siutation is a little
@@ -199,13 +210,13 @@ compression tools in a selection of programming languages with an arbitrary grad
 system for how "stable" I think they are (feel free to put in a pull request if you want
 to contribute other languages).
 
-|        | gzip        | bzip2        | xz         | zstd         |
-|--------|-------------|--------------|------------|--------------|
-| Python | [A][pygzip] | [A][pybz2]   | [A][pyxz]  | [B+][pyzstd] |
-| Rust   | [A][gziprs] | [B+][bz2rs]  | [B+][xzrs] | [B][zstdrs]  |
-| C/C++  | [A][zlib]   | [A][bzip2]   | [A][xz]    | [A][zstd]    |
-| Julia  | [A][gzipjl] | [A][bzip2jl] | [A][xzjl]  | [A][zstdjl]  |
-| Go     | [A][gzipgo] | [A][bzip2go] | [B][xzgo]  | [B][zstdgo]  |
+|        | gzip        | bzip2        | xz         | zstd         | brotli      |
+|--------|-------------|--------------|------------|--------------|-------------|
+| Python | [A][pygzip] | [A][pybz2]   | [A][pyxz]  | [B+][pyzstd] | [A][brotli] |
+| Rust   | [A][gziprs] | [B+][bz2rs]  | [B+][xzrs] | [B][zstdrs]  | [B+][brrs]  |
+| C/C++  | [A][zlib]   | [A][bzip2]   | [A][xz]    | [A][zstd]    | [A][brotli] |
+| Julia  | [A][gzipjl] | [A][bzip2jl] | [A][xzjl]  | [A][zstdjl]  | NA          |
+| Go     | [A][gzipgo] | [A][bzip2go] | [B][xzgo]  | [B][zstdgo]  | [A][brotli] |
 
 - A: standard library (i.e. builtin) or library is maintained by the original
   developer (note: Rust's `gzip` library is maintained by rust-lang itself)
@@ -256,3 +267,7 @@ to contribute other languages).
 [xzgo]: https://github.com/ulikunitz/xz
 
 [zstdgo]: https://pkg.go.dev/github.com/klauspost/compress/zstd
+
+[brotli]: https://github.com/google/brotli
+
+[brrs]: https://github.com/dropbox/rust-brotli
