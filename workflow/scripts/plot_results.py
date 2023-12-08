@@ -65,8 +65,8 @@ def plot_compression_ratio(data, y, hue_order, style_order, style, hue, output):
         line.set_linewidth(LEG_LW)
 
     for tool, lvl in DEFAULT_LVL.items():
-        for t in set(data["technology"]):
-            mean = data.query("tool==@tool and level==@lvl and technology==@t")[
+        for t in set(data["group"]):
+            mean = data.query("tool==@tool and level==@lvl and group==@t")[
                 "compress_ratio"
             ].mean()
             ax.scatter(lvl, mean, s=110, fc="None", ec="red")
@@ -134,8 +134,8 @@ def plot_rate_and_memory(ys, data, hue, hue_order, style, style_order, output):
                 line.set_linewidth(LEG_LW)
 
         for tool, lvl in DEFAULT_LVL.items():
-            for t in set(data["technology"]):
-                mean = data.query("tool==@tool and level==@lvl and technology==@t")[
+            for t in set(data["group"]):
+                mean = data.query("tool==@tool and level==@lvl and group==@t")[
                     y
                 ].mean()
                 ax.scatter(lvl, mean, s=110, fc="None", ec="red")
@@ -194,24 +194,24 @@ def main():
     uncompressed_size = {}
     for p in map(Path, snakemake.input.uncompressed_sizes):
         size = int(p.read_text().strip())
-        acc = p.name.split(".")[0]
-        uncompressed_size[acc] = size
+        name = p.name.split(".")[0]
+        uncompressed_size[name] = size
 
     size_df = pd.read_csv(snakemake.input.compressed_sizes).set_index(
-        ["accession", "technology", "tool", "level"], drop=False, verify_integrity=True
+        ["name", "group", "tool", "level"], drop=False, verify_integrity=True
     )
 
     def ratio_func(row):
-        return row.bytes / uncompressed_size[row.accession]
+        return row.bytes / uncompressed_size[row['name']]
 
     size_df["compress_ratio"] = size_df.apply(ratio_func, axis=1)
 
     mode = "compress"
     frames = []
     for p in map(Path, snakemake.input.compress_benchmarks):
-        acc = p.name.split(".")[0]
+        name = p.name.split(".")[0]
         lvl = int(p.parts[-3])
-        tech = p.parts[-2]
+        group = p.parts[-2]
         tool = p.parts[-4]
         subdf = pd.read_csv(p, sep="\t")
         keep = ["s", "max_rss"]
@@ -220,21 +220,21 @@ def main():
             columns={"s": f"{mode}_secs", "max_rss": f"{mode}_max_rss"}, inplace=True
         )
         subdf["tool"] = tool
-        subdf["accession"] = acc
-        subdf["technology"] = tech
+        subdf["name"] = name
+        subdf["group"] = group
         subdf["level"] = lvl
-        subdf[f"{mode}_rate"] = uncompressed_size[acc] / subdf[f"{mode}_secs"][0]
+        subdf[f"{mode}_rate"] = uncompressed_size[name] / subdf[f"{mode}_secs"][0]
         frames.append(subdf)
     compress_frame = pd.concat(frames).set_index(
-        ["accession", "technology", "tool", "level"], drop=False, verify_integrity=True
+        ["name", "group", "tool", "level"], drop=False, verify_integrity=True
     )
 
     mode = "decompress"
     frames = []
     for p in map(Path, snakemake.input.decompress_benchmarks):
-        acc = p.name.split(".")[0]
+        name = p.name.split(".")[0]
         lvl = int(p.parts[-3])
-        tech = p.parts[-2]
+        group = p.parts[-2]
         tool = p.parts[-4]
         subdf = pd.read_csv(p, sep="\t")
         keep = ["s", "max_rss"]
@@ -243,21 +243,21 @@ def main():
             columns={"s": f"{mode}_secs", "max_rss": f"{mode}_max_rss"}, inplace=True
         )
         subdf["tool"] = tool
-        subdf["accession"] = acc
-        subdf["technology"] = tech
+        subdf["name"] = name
+        subdf["group"] = group
         subdf["level"] = lvl
-        subdf[f"{mode}_rate"] = uncompressed_size[acc] / subdf[f"{mode}_secs"][0]
+        subdf[f"{mode}_rate"] = uncompressed_size[name] / subdf[f"{mode}_secs"][0]
         frames.append(subdf)
     decompress_frame = pd.concat(frames).set_index(
-        ["accession", "technology", "tool", "level"], drop=False, verify_integrity=True
+        ["name", "group", "tool", "level"], drop=False, verify_integrity=True
     )
 
     df = compress_frame.combine_first(decompress_frame).combine_first(size_df)
 
     hue = "tool"
     hue_order = sorted(DEFAULT_LVL)
-    style = "technology"
-    style_order = ["illumina", "nanopore"]
+    style = "group"
+    style_order = sorted(set(df["group"]))
 
     plot_compression_ratio(
         data=df,

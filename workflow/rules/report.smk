@@ -1,8 +1,8 @@
 rule aggregate_sizes:
     input:
         sizes=[
-            RESULTS / f"compress/{tool}/{lvl}/{tech}/{acc}.size"
-            for (tool, lvl, tech, acc) in combos
+            RESULTS / f"compress/{tool}/{lvl}/{group}/{name}.size"
+            for (tool, lvl, group, name) in combos
         ],
     output:
         RESULTS / "compress/sizes.csv",
@@ -11,49 +11,48 @@ rule aggregate_sizes:
 
         with open(output[0], "w") as fd:
             print(
-                ",".join(["tool", "level", "technology", "accession", "bytes"]), file=fd
+                ",".join(["tool", "level", "group", "name", "bytes"]), file=fd
             )
             for p in map(Path, input.sizes):
                 tool = p.parts[-4]
                 lvl = p.parts[-3]
-                tech = p.parts[-2]
-                acc = p.name.split(".")[0]
+                group = p.parts[-2]
+                name = p.name.split(".")[0]
                 size = p.read_text().strip()
-                print(",".join([tool, lvl, tech, acc, size]), file=fd)
+                print(",".join([tool, lvl, group, name, size]), file=fd)
 
 
-download_techs = []
-download_accs = []
-for tech, accs in config["accessions"].items():
-    for a in accs:
-        download_techs.append(tech)
-        download_accs.append(a)
+data_groups = []
+data_names = []
+for sample in samples.values():
+    data_groups.append(sample['group'])
+    data_names.append(sample["name"])
 
 
 rule plot_results:
     input:
         uncompressed_sizes=expand(
-            str(RESULTS / "data/{tech}/{acc}.size"),
+            str(RESULTS / "data/{group}/{name}.size"),
             zip,
-            tech=download_techs,
-            acc=download_accs,
+            group=data_groups,
+            name=data_names,
         ),
         compressed_sizes=rules.aggregate_sizes.output[0],
         compress_benchmarks=expand(
-            str(BENCH / "compress/{tool}/{lvl}/{tech}/{acc}.tsv"),
+            str(BENCH / "compress/{tool}/{lvl}/{group}/{name}.tsv"),
             zip,
             tool=[c[0] for c in combos],
             lvl=[c[1] for c in combos],
-            tech=[c[2] for c in combos],
-            acc=[c[3] for c in combos],
+            group=[c[2] for c in combos],
+            name=[c[3] for c in combos],
         ),
         decompress_benchmarks=expand(
-            str(BENCH / "decompress/{tool}/{lvl}/{tech}/{acc}.tsv"),
+            str(BENCH / "decompress/{tool}/{lvl}/{group}/{name}.tsv"),
             zip,
             tool=[c[0] for c in combos],
             lvl=[c[1] for c in combos],
-            tech=[c[2] for c in combos],
-            acc=[c[3] for c in combos],
+            group=[c[2] for c in combos],
+            name=[c[3] for c in combos],
         ),
     output:
         compression_ratio=RESULTS / "figures/compression_ratio.png",
@@ -64,7 +63,7 @@ rule plot_results:
     log:
         LOGS / "plot_results.log",
     params:
-        default_lvl=config["default_compressions_levels"],
+        default_lvl={tool:tool_config['compression']['default'] for tool, tool_config in config["tools"].items()},
     conda:
         ENVS / "plot_results.yaml"
     script:
