@@ -1,114 +1,30 @@
-rule compress_gzip:
-    input:
-        fq=rules.download_data.output.fq,
-    output:
-        fq=temp(RESULTS / "compress/gzip/{lvl}/{tech}/{acc}.fq.gz"),
-        size=RESULTS / "compress/gzip/{lvl}/{tech}/{acc}.size",
-    log:
-        LOGS / "compress_gzip/{lvl}/{tech}/{acc}.log"
-    benchmark:
-        BENCH / "compress/gzip/{lvl}/{tech}/{acc}.tsv"
-    resources:
-        runtime=lambda wildcards, attempt: f"{1 * attempt}d",
-        mem_mb=lambda wildcards, attempt: attempt * int(4 * GB),
-    params:
-        opts="-c -{lvl}"
-    conda:
-        ENVS / "gzip.yaml"
-    shell:
-        """
-        gzip {params.opts} {input.fq} > {output.fq} 2> {log}
-        (wc -c {output.fq} | awk '{{print $1}}') > {output.size} 2>> {log}
-        """
-
-rule compress_bzip2:
-    input:
-        fq=rules.download_data.output.fq,
-    output:
-        fq=temp(RESULTS / "compress/bzip2/{lvl}/{tech}/{acc}.fq.bz2"),
-        size=RESULTS / "compress/bzip2/{lvl}/{tech}/{acc}.size",
-    log:
-        LOGS / "compress_bzip2/{lvl}/{tech}/{acc}.log"
-    benchmark:
-        BENCH / "compress/bzip2/{lvl}/{tech}/{acc}.tsv"
-    resources:
-        runtime=lambda wildcards, attempt: f"{1 * attempt}d",
-        mem_mb=lambda wildcards, attempt: attempt * int(4 * GB),
-    params:
-        opts="-z -c -{lvl}"
-    conda:
-        ENVS / "bzip2.yaml"
-    shell:
-        """
-        bzip2 {params.opts} {input.fq} > {output.fq} 2> {log}
-        (wc -c {output.fq} | awk '{{print $1}}') > {output.size} 2>> {log}
-        """
-
-rule compress_xz:
-    input:
-        fq=rules.download_data.output.fq,
-    output:
-        fq=temp(RESULTS / "compress/xz/{lvl}/{tech}/{acc}.fq.xz"),
-        size=RESULTS / "compress/xz/{lvl}/{tech}/{acc}.size",
-    log:
-        LOGS / "compress_xz/{lvl}/{tech}/{acc}.log"
-    benchmark:
-        BENCH / "compress/xz/{lvl}/{tech}/{acc}.tsv"
-    resources:
-        runtime=lambda wildcards, attempt: f"{1 * attempt}d",
-        mem_mb=lambda wildcards, attempt: attempt * int(4 * GB),
-    params:
-        opts="-z -c -{lvl}"
-    conda:
-        ENVS / "xz.yaml"
-    shell:
-        """
-        xz {params.opts} {input.fq} > {output.fq} 2> {log}
-        (wc -c {output.fq} | awk '{{print $1}}') > {output.size} 2>> {log}
-        """
-
-rule compress_zstd:
-    input:
-        fq=rules.download_data.output.fq,
-    output:
-        fq=temp(RESULTS / "compress/zstd/{lvl}/{tech}/{acc}.fq.zst"),
-        size=RESULTS / "compress/zstd/{lvl}/{tech}/{acc}.size",
-    log:
-        LOGS / "compress_zstd/{lvl}/{tech}/{acc}.log"
-    benchmark:
-        BENCH / "compress/zstd/{lvl}/{tech}/{acc}.tsv"
-    resources:
-        runtime=lambda wildcards, attempt: f"{1 * attempt}d",
-        mem_mb=lambda wildcards, attempt: attempt * int(4 * GB),
-    params:
-        opts="-c -{lvl}"
-    conda:
-        ENVS / "zstd.yaml"
-    shell:
-        """
-        zstd {params.opts} {input.fq} > {output.fq} 2> {log}
-        (wc -c {output.fq} | awk '{{print $1}}') > {output.size} 2>> {log}
-        """
-
-rule compress_brotli:
-    input:
-        fq=rules.download_data.output.fq,
-    output:
-        fq=temp(RESULTS / "compress/brotli/{lvl}/{tech}/{acc}.fq.br"),
-        size=RESULTS / "compress/brotli/{lvl}/{tech}/{acc}.size",
-    log:
-        LOGS / "compress_brotli/{lvl}/{tech}/{acc}.log"
-    benchmark:
-        BENCH / "compress/brotli/{lvl}/{tech}/{acc}.tsv"
-    resources:
-        runtime=lambda wildcards, attempt: f"{1 * attempt}d",
-        mem_mb=lambda wildcards, attempt: attempt * int(4 * GB),
-    params:
-        opts="-c -q {lvl}"
-    conda:
-        ENVS / "brotli.yaml"
-    shell:
-        """
-        brotli {params.opts} {input.fq} > {output.fq} 2> {log}
-        (wc -c {output.fq} | awk '{{print $1}}') > {output.size} 2>> {log}
-        """
+# Loop to create compression rules for each tool
+for tool, tool_params in config['tools'].items():
+    compress_params = tool_params.get('compression', {})
+    if compress_params:  # Check if compression settings are available
+        rule_name = f"compress_{tool}"
+        rule:
+            name: rule_name
+            input:
+                fq=rules.get_data.output.fq,
+            output:
+                fq=temp(RESULTS / f"compress/{tool}/{{lvl}}/{{group}}/{{name}}.{tool_params['extension']}"),
+                size=RESULTS / f"compress/{tool}/{{lvl}}/{{group}}/{{name}}.size",
+            log:
+                LOGS / f"compress_{tool}/{{lvl}}/{{group}}/{{name}}.log"
+            benchmark:
+                BENCH / f"compress/{tool}/{{lvl}}/{{group}}/{{name}}.tsv"
+            resources:
+                runtime=lambda wildcards, attempt: f"{1 * attempt}d",
+                mem_mb=lambda wildcards, attempt: attempt * int(4 * GB),
+            conda:
+                ENVS / f"{tool}.yaml"
+            params:
+                opts=compress_params['opts'],
+                tool=tool,
+            shell:
+                """
+                {params.tool} {params.opts} {input.fq} > {output.fq} 2> {log}
+                
+                (wc -c {output.fq} | awk '{{print $1}}') > {output.size} 2>> {log}
+                """
