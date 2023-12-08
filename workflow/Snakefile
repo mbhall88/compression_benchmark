@@ -1,36 +1,52 @@
 from pathlib import Path
-
+import csv
 
 configfile: "config/config.yaml"
 
 
-WORKFLOW = Path("workflow").resolve()
+WORKFLOW = Path(workflow.basedir)
 RULES = WORKFLOW / "rules"
 ENVS = WORKFLOW / "envs"
 SCRIPTS = WORKFLOW / "scripts"
-RESULTS = Path("results").resolve()
+RESULTS = Path(config["out"]).resolve()
 BENCH = RESULTS / "benchmark"
 LOGS = Path("logs/rules").resolve()
 CONTAINERS = config["containers"]
 RESOURCES = Path("resources").resolve()
 GB = 1_000
-EXTENSIONS = {"gzip": "gz", "bzip2": "bz2", "xz": "xz", "zstd": "zst", "brotli": "br"}
 combos = []
 target_files = set()
 
-nanopore_accessions = config["accessions"]["nanopore"]
-illumina_accessions = config["accessions"]["illumina"]
-for tool, rng in config["compression_level_ranges"].items():
-    s = rng[0]
-    e = rng[-1]
-    ext = EXTENSIONS[tool]
+samples = {}
+with open(config["samples"]) as file:
+    for sample in csv.DictReader(file):
+        # Extract the path and check if it exists
+        path = Path(sample["file"])
+        # Extract the stem name from the path if it exists, else use None
+        name = path.stem if path else None
+        
+        if not path.exists():
+            path = None
+        else:
+            path = path.resolve()  # Get the absolute path
+
+        # Store the sample information in the dictionary
+        samples[name] = {
+            "name": name,
+            "group": sample["group"],
+            "path": str(path) if path else None  # Convert Path object to string
+        }
+
+for tool, tool_config in config["tools"].items():
+    s = tool_config['compression']['range']['min']
+    e = tool_config['compression']['range']['max']
+    ext = tool_config['extension']
     for lvl in range(s, e + 1):
-        for acc in nanopore_accessions:
-            target_files.add(BENCH / f"decompress/{tool}/{lvl}/nanopore/{acc}.tsv")
-            combos.append([tool, lvl, "nanopore", acc])
-        for acc in illumina_accessions:
-            target_files.add(BENCH / f"decompress/{tool}/{lvl}/illumina/{acc}.tsv")
-            combos.append([tool, lvl, "illumina", acc])
+        for sample in samples.values():
+            group = sample["group"]
+            name = sample["name"]
+            target_files.add(BENCH / f"decompress/{tool}/{lvl}/{group}/{name}.tsv")
+            combos.append([tool, lvl, group, name])
 
 target_files.add(RESULTS / "figures/compression_ratio.png")
 target_files.add(RESULTS / "figures/rate_and_memory.png")
@@ -47,7 +63,7 @@ rule all:
         target_files,
 
 
-include: RULES / "download.smk"
+include: RULES / "data.smk"
 include: RULES / "compress.smk"
 include: RULES / "decompress.smk"
 include: RULES / "report.smk"

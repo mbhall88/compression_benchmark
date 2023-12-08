@@ -1,50 +1,57 @@
+samples: config/samples.csv
+out: results
+
+tools:
+  gzip:
+    extension: "gz"
+    compression:
+      opts: "-c -{lvl}"
+      range:
+        min: 1
+        max: 9
+      default: 6
+    decompression:
+      opts: "-c -d"
+  bzip2:
+    extension: "bz2"
+    compression:
+      opts: "-z -c -{lvl}"
+      range:
+        min: 1
+        max: 9
+      default: 9
+    decompression:
+      opts: "-d -c"
+  xz:
+    extension: "xz"
+    compression:
+      opts: "-z -c -{lvl}"
+      range:
+        min: 1
+        max: 9
+      default: 6
+    decompression:
+      opts: "-d -c"
+  zstd:
+    extension: "zst"
+    compression:
+      opts: "-c -{lvl}"
+      range:
+        min: 1
+        max: 19
+      default: 3
+    decompression:
+      opts: "-c -d"
+  brotli:
+    extension: "br"
+    compression:
+      opts: "-c -q {lvl}"
+      range:
+        min: 1
+        max: 11
+      default: 11
+    decompression:
+      opts: "-c -d"
+
 containers:
   fastq_dl: "docker://quay.io/biocontainers/fastq-dl:2.0.1--pyhdfd78af_0"
-
-accessions:
-  nanopore:
-    - "ERR3152364"  # https://doi.org/10.1093/gigascience/giz043
-    - "ERR9030439"  # https://doi.org/10.1016/S2666-5247(22)00301-9
-    - "SRR11038964" # https://doi.org/10.1016/j.envpol.2020.115081
-    - "SRR12695179" # https://doi.org/10.1128/MRA.01159-20
-    - "SRR24283715"
-    - "ERR10367342" # https://doi.org/10.1099/mgen.0.000132
-    - "SRR24015950"
-    - "SRR15422103"
-    - "SRR13044184"
-    - "SRR22859778"
-  illumina:
-    - "ERR2935805"  # https://doi.org/10.1093/gigascience/giz043
-    - "ERR9030317"  # https://doi.org/10.1016/S2666-5247(22)00301-9
-    - "SRR11038976" # https://doi.org/10.1016/j.envpol.2020.115081
-    - "SRR12695183" # https://doi.org/10.1128/MRA.01159-20
-    - "SRR24283718"
-    - "ERR1023775"  # https://doi.org/10.1099/mgen.0.000132
-    - "SRR24015952"
-    - "SRR22859722"
-    - "SRR098024"
-    - "SRR077288"
-
-compression_level_ranges:
-  gzip:
-    - 1
-    - 9
-  bzip2:
-    - 1
-    - 9
-  xz:
-    - 1
-    - 9
-  zstd:
-    - 1
-    - 19
-  brotli:
-    - 1
-    - 11
-
-default_compressions_levels:
-  gzip: 6
-  zstd: 3
-  bzip2: 9
-  xz: 6
-  brotli: 11
