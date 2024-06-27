@@ -1,0 +1,8 @@
+name: download
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - seqkit=2.8
+  - fastq-dl=2.0.4
+  - seqtk 1.4

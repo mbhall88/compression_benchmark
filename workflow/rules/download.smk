@@ -4,8 +4,8 @@ rule download_data:
         size=RESULTS / "data/{tech}/{acc}.size"
     log:
         LOGS / "download_data/{tech}/{acc}.log"
-    container:
-        CONTAINERS["fastq_dl"]
+    conda:
+        ENVS / "download.yaml"
     resources:
         mem_mb=int(2 * GB)
     params:
@@ -20,7 +20,13 @@ rule download_data:
         else
             READ1={params.outdir}/{wildcards.acc}_1.fastq.gz
             READ2={params.outdir}/{wildcards.acc}_2.fastq.gz
-            (paste <(zcat $READ1 | paste - - - - ) <(zcat $READ2 | paste - - - - ) | tr '\t' '\n') > {output.fq} 2>> {log}
+            tmp1=$(mktemp)
+            tmp2=$(mktemp)
+            # add /1 and /2 to read names
+            seqkit seq -i $READ1 | seqkit replace -p $ -r /1 > $tmp1 2>> {log}
+            seqkit seq -i $READ2 | seqkit replace -p $ -r /2 > $tmp2 2>> {log}
+            # interleave reads
+            seqtk mergepe $tmp1 $tmp2 > {output.fq} 2>> {log}
         fi
         (wc -c {output.fq} | awk '{{print $1}}') > {output.size} 2>> {log}
         """

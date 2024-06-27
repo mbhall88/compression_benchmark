@@ -10,13 +10,13 @@ if [[ ! -d "$LOG_DIR" ]]; then
 fi
 
 MEMORY="2G"
-TIME="2d"
+TIME="${TIME:-3h}"
 THREADS=2
-PROFILE="slurm.punim1703"
-BINDS="/data/scratch/projects/punim1703/"
+PROFILE="slurm.punim2009"
+BINDS="/data/scratch/projects/punim2009/"
 SINGULARITY_ARGS="-B $BINDS"
 DEFAULT_TMP="tmpdir='/tmp'"
 CMD="snakemake --profile $PROFILE --default-resources \"$DEFAULT_TMP\" --rerun-incomplete --local-cores $THREADS $* --singularity-args '$SINGULARITY_ARGS'"
 
 ssubmit -t "$TIME" -m "$MEMORY" -o "$LOG_DIR"/"$JOB_NAME".o \
-    -e "$LOG_DIR"/"$JOB_NAME".e "$JOB_NAME" "$CMD" -- -c "$THREADS"
+    -e "$LOG_DIR"/"$JOB_NAME".e "$JOB_NAME" "$CMD" -- -c "$THREADS" -p sapphire

@@ -41,6 +41,12 @@ compression_level_ranges:
   brotli:
     - 1
     - 11
+  ubam:
+    - 1
+    - 1
+  ucram:
+    - 1
+    - 1
 
 default_compressions_levels:
   gzip: 6
@@ -48,3 +54,5 @@ default_compressions_levels:
   bzip2: 9
   xz: 6
   brotli: 11
+  ubam: 1
+  ucram: 1

@@ -23,7 +23,7 @@ illumina_accessions = config["accessions"]["illumina"]
 for tool, rng in config["compression_level_ranges"].items():
     s = rng[0]
     e = rng[-1]
-    ext = EXTENSIONS[tool]
+
     for lvl in range(s, e + 1):
         for acc in nanopore_accessions:
             target_files.add(BENCH / f"decompress/{tool}/{lvl}/nanopore/{acc}.tsv")

@@ -92,3 +92,41 @@ rule decompress_brotli:
         ENVS / "brotli.yaml"
     shell:
         "brotli {params.opts} {input.fq} > {output.fq} 2> {log}"
+
+rule decompress_ubam:
+    input:
+        fq=rules.compress_ubam.output.fq,
+    output:
+        fq=temp(RESULTS / "decompress/ubam/{lvl}/{tech}/{acc}.fq"),
+    log:
+        LOGS / "decompress_ubam/{lvl}/{tech}/{acc}.log"
+    benchmark:
+        BENCH / "decompress/ubam/{lvl}/{tech}/{acc}.tsv"
+    resources:
+        runtime=lambda wildcards, attempt: f"{1 * attempt}d",
+        mem_mb=lambda wildcards, attempt: attempt * int(4 * GB),
+    params:
+        opts="-c -d"
+    container:
+        "docker://quay.io/biocontainers/samtools:1.20--h50ea8bc_0"
+    shell:
+        "samtools fastq {input.fq} > {output.fq} 2> {log}"
+
+rule decompress_ucram:
+    input:
+        fq=rules.compress_ucram.output.fq,
+    output:
+        fq=temp(RESULTS / "decompress/ucram/{lvl}/{tech}/{acc}.fq"),
+    log:
+        LOGS / "decompress_ucram/{lvl}/{tech}/{acc}.log"
+    benchmark:
+        BENCH / "decompress/ucram/{lvl}/{tech}/{acc}.tsv"
+    resources:
+        runtime=lambda wildcards, attempt: f"{1 * attempt}d",
+        mem_mb=lambda wildcards, attempt: attempt * int(4 * GB),
+    params:
+        opts="-c -d"
+    container:
+        "docker://quay.io/biocontainers/samtools:1.20--h50ea8bc_0"
+    shell:
+        "samtools fastq {input.fq} > {output.fq} 2> {log}"
