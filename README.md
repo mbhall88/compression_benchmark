@@ -2,7 +2,7 @@
 
 [![DOI](https://zenodo.org/badge/645588875.svg)](https://zenodo.org/badge/latestdoi/645588875)
 
-Benchmarking fastq compression with generic (mature) compression algorithms
+Benchmarking FASTQ compression with generic (mature) compression algorithms
 
 - [FASTQ compression benchmark](#fastq-compression-benchmark)
   - [Motivation](#motivation)
@@ -66,7 +66,7 @@ for all other options. For uBAM and uCRAM [I used a pretty default `samtools imp
 
 ### Data
 
-The data used to test each tool are fastqs:
+The data used to test each tool are FASTQs:
 
 #### Nanopore
 
@@ -113,13 +113,13 @@ Note: I couldn't find sources for all of these samples. If you can fill in some 
 gaps, please raise an issue and I will gladly update the sources.
 
 All data were downloaded with [`fastq-dl`][fastq_dl] (v2.0.4). Paired Illumina data were
-combined into a single fastq file with `seqtk mergepe`.
+combined into a single FASTQ file with `seqtk mergepe`.
 
 ## Results
 
 ### Compression ratio
 
-The first question is how much smaller does each compression tool make a fastq file. As
+The first question is how much smaller does each compression tool make a FASTQ file. As
 this also depends on the compression level selected, all possible levels were tested for
 each tool (the default being indicated with a red circle).
 
