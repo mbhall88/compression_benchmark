@@ -2,7 +2,7 @@
 
 [![DOI](https://zenodo.org/badge/645588875.svg)](https://zenodo.org/badge/latestdoi/645588875)
 
-Benchmarking FASTQ compression with generic (mature) compression algorithms
+Benchmarking FASTQ compression with 'mature' compression algorithms
 
 - [FASTQ compression benchmark](#fastq-compression-benchmark)
   - [Motivation](#motivation)
