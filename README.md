@@ -106,8 +106,8 @@ The data used to test each tool are fastqs:
 Note: I couldn't find sources for all of these samples. If you can fill in some of the
 gaps, please raise an issue and I will gladly update the sources.
 
-All data were downloaded with [`fastq-dl`][fastq_dl] (v2.0.1). Paired Illumina data were
-combined into a single fastq file.
+All data were downloaded with [`fastq-dl`][fastq_dl] (v2.0.4). Paired Illumina data were
+combined into a single fastq file with `seqtk mergepe`.
 
 ## Results
 
