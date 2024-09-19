@@ -12,8 +12,8 @@ fi
 MEMORY="2G"
 TIME="${TIME:-3h}"
 THREADS=2
-PROFILE="slurm.punim2009"
-BINDS="/data/scratch/projects/punim2009/"
+PROFILE="slurm.punim1703"
+BINDS="/data/scratch/projects/punim1703/"
 SINGULARITY_ARGS="-B $BINDS"
 DEFAULT_TMP="tmpdir='/tmp'"
 CMD="snakemake --profile $PROFILE --default-resources \"$DEFAULT_TMP\" --rerun-incomplete --local-cores $THREADS $* --singularity-args '$SINGULARITY_ARGS'"

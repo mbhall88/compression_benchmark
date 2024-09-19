@@ -160,3 +160,26 @@ rule compress_ucram:
             samtools sort -O cram --output-fmt-option archive -M - -o {output.fq}) 2> {log}
         (wc -c {output.fq} | awk '{{print $1}}') > {output.size} 2>> {log}
         """
+
+rule compress_lz4:
+    input:
+        fq=rules.download_data.output.fq,
+    output:
+        fq=temp(RESULTS / "compress/lz4/{lvl}/{tech}/{acc}.fq.lz4"),
+        size=RESULTS / "compress/lz4/{lvl}/{tech}/{acc}.size",
+    log:
+        LOGS / "compress_lz4/{lvl}/{tech}/{acc}.log"
+    benchmark:
+        BENCH / "compress/lz4/{lvl}/{tech}/{acc}.tsv"
+    resources:
+        runtime=lambda wildcards, attempt: f"{1 * attempt}d",
+        mem_mb=lambda wildcards, attempt: attempt * int(4 * GB),
+    params:
+        opts="-z -c -{lvl}"
+    conda:
+        ENVS / "lz4.yaml"
+    shell:
+        """
+        lz4 {params.opts} {input.fq} > {output.fq} 2> {log}
+        (wc -c {output.fq} | awk '{{print $1}}') > {output.size} 2>> {log}
+        """

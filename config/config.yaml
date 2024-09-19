@@ -47,6 +47,9 @@ compression_level_ranges:
   ucram:
     - 1
     - 1
+  lz4:
+    - 1
+    - 12
 
 default_compressions_levels:
   gzip: 6
@@ -56,3 +59,4 @@ default_compressions_levels:
   brotli: 11
   ubam: 1
   ucram: 1
+  lz4: 1

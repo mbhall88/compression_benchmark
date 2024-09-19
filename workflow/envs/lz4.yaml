@@ -1,0 +1,5 @@
+name: lz4
+channels:
+  - conda-forge
+dependencies:
+  - lz4-c=1.9

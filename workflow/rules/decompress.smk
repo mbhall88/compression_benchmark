@@ -130,3 +130,23 @@ rule decompress_ucram:
         "docker://quay.io/biocontainers/samtools:1.20--h50ea8bc_0"
     shell:
         "samtools fastq {input.fq} > {output.fq} 2> {log}"
+
+
+rule decompress_lz4:
+    input:
+        fq=rules.compress_lz4.output.fq,
+    output:
+        fq=temp(RESULTS / "decompress/lz4/{lvl}/{tech}/{acc}.fq"),
+    log:
+        LOGS / "decompress_lz4/{lvl}/{tech}/{acc}.log"
+    benchmark:
+        BENCH / "decompress/lz4/{lvl}/{tech}/{acc}.tsv"
+    resources:
+        runtime=lambda wildcards, attempt: f"{1 * attempt}d",
+        mem_mb=lambda wildcards, attempt: attempt * int(4 * GB),
+    params:
+        opts="-c -d"
+    conda:
+        ENVS / "lz4.yaml"
+    shell:
+        "lz4 {params.opts} {input.fq} > {output.fq} 2> {log}"
