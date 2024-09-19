@@ -51,6 +51,7 @@ compression' algorithms, you can convert FASTQ to and from these formats with [s
 The tools tested in this benchmark are:
 
 * [`gzip`][gzip]
+* [`lz4`][lz4]
 * [`xz`][xz]
 * [`bzip2`][bzip2]
 * [`zstd`][zstd]
@@ -147,7 +148,7 @@ are generally quite homogenous, which increases compressability._
 
 Using default settings, `zstd` and `gzip` provide similar ratios, as do `brotli`, `xz`
 and `bzip2` (however, compression level doesn't seem to actually change the ratio
-for `bzip2`). uCRAM and `xz` provide the best compression when using the highest compression level; however, this comes at a cost to runtime as we'll see below.
+for `bzip2`). uCRAM and `xz` provide the best compression when using the highest compression level; however, this comes at a cost to runtime as we'll see below. `lz4` has the worst compression ratio, especially for Nanopore data.
 
 ### (De)compression rate and memory usage
 
@@ -172,13 +173,13 @@ As alluded to earlier, `xz` and `brotli`, though not so much uCRAM, pay for thei
 orders-of-magnitude slower than the other tools at compressing (using the default compression level). uCRAM and uBAM use more memory than the other tools - although in absolute terms, the highest memory usage
 is still well below 2GB. This is due to the `samtools sort` option `-M` which clusters unaligned reads by minimizers (and improves compression). If 2GB of memory is an issue for you, this step can be excluded (with some loss in compression), or the memory usage can be capped with the `-m` option.
 
-The main take-away from Figure 2 is that `zstd` (de)compresses **much** faster than the
+The main take-away from Figure 2 is that `zstd` and `lz4` (de)compress **much** faster than the
 other tools (using the default level). Compression level seems to have a big impact in
 compression rate (except for `bzip2`), however, not so much for decompression.
 
 ### Rate vs. Ratio
 
-[Cornelius Roemer](https://github.com/corneliusroemer) [suggested plotting rate against ratio](https://github.com/mbhall88/compression_benchmark/issues/3) in order to get a [Pareto Frontier](https://en.wikipedia.org/wiki/Pareto_front). These are good plots to get a quick sense of which algorithms are best suited to a specific use case. The lower right corner is the 'magic zone' where an algorithm has high rate and ratio. In Figure 3 we see that the compression version of this plot is a little messy as the compression rate it quite variable. However, uBAM, `gzip`, and `zstd` do tend to have more points on the lower-ish right, with a spattering of `brotli` points - though there are also a number of `brotli` points on the left. The decompression plot is a lot clearer and we get nice 'fronts'. From this it is clear that `zstd`, `brotli`, and uBAM give fast decompression even with good compression ratios.
+[Cornelius Roemer](https://github.com/corneliusroemer) [suggested plotting rate against ratio](https://github.com/mbhall88/compression_benchmark/issues/3) in order to get a [Pareto Frontier](https://en.wikipedia.org/wiki/Pareto_front). These are good plots to get a quick sense of which algorithms are best suited to a specific use case. The lower right corner is the 'magic zone' where an algorithm has high rate and ratio. In Figure 3 we see that the compression version of this plot is a little messy as the compression rate it quite variable. However, uBAM, `gzip`, and `zstd` do tend to have more points on the lower-ish right, with a spattering of `brotli`  and (Illumina) `lz4` points - though there are also a number of `brotli` and `lz4` points on the left - and `lz4` points up the top. The decompression plot is a lot clearer and we get nice 'fronts'. From this it is clear that `lz4`, `zstd`, `brotli`, and uBAM give fast decompression even with good compression ratios.
 
 ![Pareto frontier figure](./results/figures/pareto_frontier.png)
 
@@ -194,7 +195,7 @@ If all you care about is compressing your data as small as it will go ,and you d
 mind how long it takes, then uCRAM or `xz` (compression level 9) or `brotli` (level 11 - default) - are the obvious choices. However, if you're planning on a really good one-off compression, but expect decrompressing regularly, uCRAM is probably the better option.
 
 If you want fast (de)compression, then `zstd` is the best option - using default
-options - followed closely by uBAM. Though a special mention should also go to `brotli` for decompression rates.
+options - followed closely by uBAM. `lz4` is also great for fast (de)compression, but the compression ratios are not great. And a special mention should also go to `brotli` for decompression rates.
 
 If, like most people, you're contemplating replacing `gzip` (default options), uBAM or uCRAM seem like pretty convincing options. uCRAM will give ~8% better compression ratios, but is roughly half the (de)compression rate. Another
 option is `zstd` (default options), which will give you about the
@@ -210,13 +211,13 @@ compression tools in a selection of programming languages with an arbitrary grad
 system for how "stable" I think they are (feel free to put in a pull request if you want
 to contribute other languages).
 
-|        | gzip        | bzip2        | xz         | zstd         | brotli      | uBAM/uCRAM |
-| ------ | ----------- | ------------ | ---------- | ------------ | ----------- | ---------- |
-| Python | [A][pygzip] | [A][pybz2]   | [A][pyxz]  | [B+][pyzstd] | [A][brotli] | [B][pysam] |
-| Rust   | [A][gziprs] | [B+][bz2rs]  | [B+][xzrs] | [B][zstdrs]  | [B+][brrs]  | B <sup>[1][rust_htslib],[2][noodles]</sup> |
-| C/C++  | [A][zlib]   | [A][bzip2]   | [A][xz]    | [A][zstd]    | [A][brotli] | [A][htslib] |
-| Julia  | [A][gzipjl] | [A][bzip2jl] | [A][xzjl]  | [A][zstdjl]  | NA          | help |
-| Go     | [A][gzipgo] | [A][bzip2go] | [B][xzgo]  | [B][zstdgo]  | [A][brotli] | help |
+|        | gzip        | bzip2        | xz         | zstd         | brotli      | uBAM/uCRAM | lz4 |
+| ------ | ----------- | ------------ | ---------- | ------------ | ----------- | ---------- | --- |
+| Python | [A][pygzip] | [A][pybz2]   | [A][pyxz]  | [B+][pyzstd] | [A][brotli] | [B][pysam] | [B][python-lz4] |
+| Rust   | [A][gziprs] | [B+][bz2rs]  | [B+][xzrs] | [B][zstdrs]  | [B+][brrs]  | B <sup>[1][rust_htslib],[2][noodles]</sup> | [B][lz4rs] |
+| C/C++  | [A][zlib]   | [A][bzip2]   | [A][xz]    | [A][zstd]    | [A][brotli] | [A][htslib] | [A][lz4] |
+| Julia  | [A][gzipjl] | [A][bzip2jl] | [A][xzjl]  | [A][zstdjl]  | NA          | help | help |
+| Go     | [A][gzipgo] | [A][bzip2go] | [B][xzgo]  | [B][zstdgo]  | [A][brotli] | help | [B+][lz4go] |
 
 - A: standard library (i.e. builtin) or library is maintained by the original
   developer (note: Rust's `gzip` library is maintained by rust-lang itself)
@@ -281,3 +282,11 @@ to contribute other languages).
 [brrs]: https://github.com/dropbox/rust-brotli
 
 [samtools]: https://github.com/samtools/samtools
+
+[lz4]: https://github.com/lz4/lz4
+
+[python-lz4]: https://github.com/python-lz4/python-lz4
+
+[lz4rs]: https://github.com/PSeitz/lz4_flex
+
+[lz4go]: https://github.com/pierrec/lz4
